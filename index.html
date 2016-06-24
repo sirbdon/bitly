@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+</head>
+<body>
+
+<div>
+  <form id="input">
+    <label>Input text</label>
+    <input type="text" id="input-url" />
+    <button type="submit" value="submit" />submit</button>
+  </form>
+  <br><br>
+  <form id="output">
+    <input type="text" id="output-url" value=""/>
+  </form>
+
+</div>
+
+
+</body>
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+//http://bit.ly/28R1ANv
+  var getShortUrl = function(url, callback) {
+    var accessToken = 'def06aed7b93c3efe2dce5d57c9d3af833931770',
+        api = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=' + encodeURIComponent(url);
+      
+    $.getJSON(api, function(data) {
+      console.log("success");
+      console.log(data);
+    })
+      .done(function(data2) {
+        console.log("second success");
+        console.log(data2);
+      })
+      .fail(function(jqxhr, textStatus, error) {
+        console.log("error");
+        console.log(error);
+        console.log("textStatus");
+        console.log(textStatus);
+        console.log("jqxhr");
+        console.log(jqxhr);
+      })
+      .always(function(data3) {
+        console.log("complete");
+        console.log(data3);
+      });
+    };
+
+  $('form#input').submit(function(){
+      var url = $('#input-url').val();
+
+      getShortUrl(url, function(url) {
+        $('#output-url').val(url);
+      });
+  });
+});
+
+</script>
+
+
+</html>
