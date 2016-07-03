@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container-fluid">
+
+  <div class="row">
+    
+    <div class="col-lg-6">
+      <h3>Input Text</h3>
+    </div>
+
+    <div class="col-lg-6">
+      <h3>Result</h3>
+    </div>
+
+</div>
+
+  <div class="row">
+
+    <div class="col-lg-6">
+      <form id="input">
+        <textarea id="input-text" class="form-control" rows="20"></textarea>
+        <input class="btn btn-primary" type="submit" value="Submit">
+      </form>
+    </div>
+
+    <div class="col-lg-6">
+      <form id="output">
+        <textarea id="output-text" class="form-control" rows="20"></textarea>
+      </form>
+    </div>
+
+</div>
+
+</body>
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+urlArrOut = new Array();
+urlArrIn = new Array();
+textOut = ""
+inLen = 0;
+outLen = 0; 
+accessToken = 'def06aed7b93c3efe2dce5d57c9d3af833931770';
+api = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=';
+regExUrl = new RegExp(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/, 'gi');
+      
+
+  // Grab all URLs from Input Text and put into Array urlArrIn
+  function UrlInToArray(inLineText) {
+    var tempArr,
+        done = inLineText.match(regExUrl).length;
+        console.log("in 66")
+
+
+          while ( (tempArr = regExUrl.exec(inLineText) ) !== null ) {
+            urlArrIn.push(tempArr[0]);
+            inLen ++;
+            console.log("in 73")
+          }
+
+    if ( inLen === done ) {
+
+      // callback(urlArrIn, function(urlArrOut) { console.log(urlArrOut); });
+        $(function() {
+          urlArrIn.forEach(function(url, index, arrx) {
+            $.getJSON(api + encodeURIComponent(url), function(result) {
+                
+                urlArrOut.push(result.data.url);
+
+                if (index === arrx.length - 1) {
+                  
+                  sendText();
+                }
+              })
+            })
+          })
+
+        var i = 0;
+        var outLineText = [];
+        outLineText[0] = inLineText;
+
+        function sendText() {
+          // $('#output-text').val(urlArrOut);
+          while ( (tempArr2 = regExUrl.exec(inLineText) ) !== null ) {
+            var oldy = tempArr2[0];
+            var newy = urlArrOut[i];
+
+            console.log("OUT")
+            if (typeof newy === 'string') {
+              console.log("IN")
+              outLineText[i+1] = outLineText[i].replace(oldy, newy);
+              console.log(oldy, newy);
+              console.log(outLineText);
+              i ++;
+            }
+        }
+
+          if ( i === done ) {
+            var outText = outLineText[done].replace(/\s!###!\s/g, '\n');
+            $('#output-text').val(outText);
+          }
+
+        }
+
+    }
+
+
+  }
+
+
+
+  function logging(data) {
+    console.log(data);
+  }
+
+   function returnIt(data) {
+    return data;
+  }
+
+  
+  $('form#input').submit(function(e){
+    e.preventDefault();
+    var inText = $('#input-text').val();
+    var inLineText = inText.replace(/\r?\n|\r/g, ' !###! ');
+    console.log("in 173");
+    UrlInToArray(inLineText);
+  })
+
+  $('form#output').submit(function(e){
+      e.preventDefault();
+  })
+
+});
+
+</script>
+
+
+</html>

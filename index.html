@@ -1,68 +1,122 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <title></title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+<!-- embedly & jquery preview  -->
+<!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+<!-- Latest compiled and minified JavaScript -->
+<script src="http://cdn.embed.ly/jquery.embedly-3.0.5.min.js" type="text/javascript"></script>
+<script src="http://cdn.embed.ly/jquery.preview-0.3.2.min.js" type="text/javascript"></script>
+<script src="preview.js" type="text/javascript"></script>
+<link rel="stylesheet" href="http://cdn.embed.ly/jquery.preview-0.3.2.css" />
+<!-- cloudinary file upload sources -->
+<script src='jquery.ui.widget.js' type='text/javascript'></script>
+<script src='jquery.iframe-transport.js' type='text/javascript'></script>
+<script src='jquery.fileupload.js' type='text/javascript'></script>
+<script src='jquery.cloudinary.js' type='text/javascript'></script>
+<script src='//widget.cloudinary.com/global/all.js' type='text/javascript'></script>
+
+
+<script src='bitly.js' type='text/javascript' ></script>
 </head>
+
 <body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <h3>Input Text</h3>
+    </div>
+    <div class="col-lg-6 col-md-6 hidden-sm">
+      <h3>Result</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <form id="input">
+        <textarea id="input-text" class="form-control" rows="20"></textarea>
+        <br>
+        <input class="btn btn-primary" type="submit" value="Submit">
+        <br><br><br>
+        <button id="copyReset" class="btn btn-default">Copy and Reset</button>
+        <br><br><br>
+        <button id="checkUrls" class="btn btn-default">Check URLs</button>
+      </form>
+    </div>
+    
+    <div class="clearfix visible-sm-block visible-xs-block"></div>
 
-<div>
-  <form id="input">
-    <label>Input text</label>
-    <input type="text" id="input-url" />
-    <button type="submit" value="submit" />submit</button>
-  </form>
-  <br><br>
-  <form id="output">
-    <input type="text" id="output-url" value=""/>
-  </form>
+    <div class="visible-sm col-sm-12">
+      <h3>Result</h3>
+    </div>
 
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <form id="output" onsubmit="return false">
+        <textarea id="output-text" class="form-control" rows="20"></textarea>
+      </form>
+    </div>
 </div>
-
-
+  <br><br>
+<!-- cloudinary form fields -->
+  <div class="row">
+    <div class="col-lg-6">
+      <form id="testing" style="" action="" method="" onsubmit="">
+        <input id="topUrl" type="text" name="url" /> 
+        <input id="cloudinary" style="display:none" name="file" type="file" class="cloudinary-fileupload" data-cloudinary-field="image_id" data-form-data=""></input>
+        <div class="preview"></div>
+          <!-- Placeholder that tells Preview where to put the selector-->
+        <div class="selector-wrapper">
+          <!-- <div class="selector-wrapper">
+            <div class="selector">
+                <div class="thumb">
+                  <div class="controls" style="display: none;">
+                    <a class="left" href="#">◀</a>
+                    <a class="right" href="#">▶</a>
+                    <a class="nothumb" href="#">✕</a>
+                  </div>
+                  <div class="items">
+                    <ul class="images">
+                      <li>
+                        <img src="http://i2.wp.com/betterthansuccess.com/wp-content/uploads/2016/04/choose-the-business-that-right-for-you.jpg?fit=1000%2C563" data-url="http://i2.wp.com/betterthansuccess.com/wp-content/uploads/2016/04/choose-the-business-that-right-for-you.jpg?fit=1000%2C563">
+                      </li>
+                      <li>
+                        <img src="http://i2.wp.com/betterthansuccess.com/wp-content/uploads/2016/04/choose-the-business-that-right-for-you.jpg?resize=696%2C392" data-url="http://i2.wp.com/betterthansuccess.com/wp-content/uploads/2016/04/choose-the-business-that-right-for-you.jpg?resize=696%2C392">
+                      </li>
+                      <li>
+                        <img src="http://betterthansuccess.com/wp-content/uploads/2016/04/choose-the-business-that-right-for-you.jpg" data-url="http://betterthansuccess.com/wp-content/uploads/2016/04/choose-the-business-that-right-for-you.jpg">
+                      </li>
+                      <li>
+                        <img src="http://betterthansuccess.com/wp-content/uploads/2016/03/LidyrAd.jpg" data-url="http://betterthansuccess.com/wp-content/uploads/2016/03/LidyrAd.jpg"></li><li><img src="http://i0.wp.com/betterthansuccess.com/wp-content/uploads/2016/06/BTS-Twitter-Banner.jpg?resize=218%2C150" data-url="http://i0.wp.com/betterthansuccess.com/wp-content/uploads/2016/06/BTS-Twitter-Banner.jpg?resize=218%2C150">
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="attributes">
+                  <a class="title" href="#" contenteditable="true">Workbook: How to Choose the Right StartUp Business for You - Better Than Success</a>
+                  <p>
+                    <a class="description" href="#" contenteditable="true">So last week I wrote an article "3 Reasons Why Every New Entrepreneur Should Focus on Running ONLY One Business at a Time". We received a lot of feedback about that article.</a>
+                  </p>
+                  <span class="meta">
+                    <img class="favicon" src="http://betterthansuccess.com/wp-content/uploads/2016/02/favicon.jpg">
+                    <a class="provider" href="http://betterthansuccess.com">betterthansuccess.com</a>
+                  </span>
+                </div>
+                <div class="action" style="display: none;">
+                  <a href="#" class="close">✕</a>
+                </div>
+              </div>
+            </div> --> <!-- sample of auto code Preview would append to DOM -->
+        </div> 
+        <button id="preview1" class="btn btn-default">GO</button><br>
+        <button id="upload" class="btn btn-default">UPLOAD</button>
+      </form>
+    </div>
+  </div>
 </body>
-
-
-<script type="text/javascript">
-
-$(document).ready(function() {
-//http://bit.ly/28R1ANv
-  var getShortUrl = function(url, callback) {
-    var accessToken = 'def06aed7b93c3efe2dce5d57c9d3af833931770',
-        api = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=' + encodeURIComponent(url);
-      
-    $.getJSON(api, function(data) {
-      console.log("success");
-      console.log(data);
-    })
-      .done(function(data2) {
-        console.log("second success");
-        console.log(data2);
-      })
-      .fail(function(jqxhr, textStatus, error) {
-        console.log("error");
-        console.log(error);
-        console.log("textStatus");
-        console.log(textStatus);
-        console.log("jqxhr");
-        console.log(jqxhr);
-      })
-      .always(function(data3) {
-        console.log("complete");
-        console.log(data3);
-      });
-    };
-
-  $('form#input').submit(function(){
-      var url = $('#input-url').val();
-
-      getShortUrl(url, function(url) {
-        $('#output-url').val(url);
-      });
-  });
-});
-
-</script>
-
-
 </html>
