@@ -35,6 +35,13 @@ function UrlInToArray() {
 //
 // use $.ajax() ??? here??
 
+function finalUrls() {
+
+  $.post('redirect.php', { reUrl: redirectUrl })
+  .done(function(data) { console.log(data) } )
+  
+}
+
 // Take intial URL's from array, get equivalent Bitly URL's and place in object to force
 // proper order (key / value)
 function getBitly() {
