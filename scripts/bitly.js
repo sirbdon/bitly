@@ -1,8 +1,7 @@
-
-
 // set global variables
 var 
   urlArrOut = new Object(),
+  bitArrOut = new Object(),
   doneUrlOut = new Array(),
   urlArrIn = new Array(),
   doneUrlIn = new Array(),
@@ -12,7 +11,8 @@ var
   donez = 0,
   accessToken = 'def06aed7b93c3efe2dce5d57c9d3af833931770',
   api = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=',
-  regExUrl = new RegExp(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/, 'gi');
+  regExUrl = new RegExp(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/, 'gi'),
+  regExRef = new RegExp(/(\?ref=[a-z]*)*(\#[a-z]*)*/, 'gi');
 
 // Grab all URLs from Input Text and put into Array urlArrIn
 function UrlInToArray() {
@@ -37,31 +37,53 @@ function UrlInToArray() {
 //
 // use $.ajax() ??? here??
 
-function pageOpen() {
-  page.open('https://app.quuu.co/r/bgarr', function(status) {
-    var title = page.evaluate(function() {
-      return document.title;
-    });
-    console.log('Page title is ' + title);
-    phantom.exit();
-  });
-} 
+function finalUrls() {
+  return new Promise(function(resolve, reject){
+    let a = urlArrIn
+
+    for (i = 0; i < a.length; i++) {
+      $.post('redirect.php', { reUrl: urlArrIn[i] }, null, 'json')
+        .done(function(data) {
+          urlArrOut[data.firstUrl] = data.finalUrl
+          if (Object.keys(urlArrOut).length === donez) { resolve(urlArrOut); }
+        })
+        .fail(function(data) {
+          reject(data)
+        })
+    }
+  })
+}
+
+function removeUrlRef() {
+  return new Promise(function(resolve, reject){
+    let obj = urlArrOut
+    let inc = 0;
+
+    for (let val in obj) {
+      if ( obj.hasOwnProperty(val) ) {
+        let newVal = obj[val].replace(regExRef, '')
+        urlArrOut[val] = newVal
+        inc++
+      }
+      if (inc === donez) { resolve(urlArrOut); } // NO ERROR HANDLED
+    }
+  })
+}
 
 // Take intial URL's from array, get equivalent Bitly URL's and place in object to force
 // proper order (key / value)
 function getBitly() {
   return new Promise(function(resolve, reject){
-    let a = urlArrIn
+    let obj = urlArrOut
 
-    for (i = 0; i < a.length; i++) {
-      $.getJSON(api + encodeURIComponent(a[i]), function(result) {
+    for (let val in obj) {
+      $.getJSON(api + encodeURIComponent(obj[val]), function(result) {
         if (result.status_code === 200) {
-          urlArrOut[result.data.long_url] = result.data.url
-          if (Object.keys(urlArrOut).length === donez) { resolve(urlArrOut); }
-
+          bitArrOut[val] = result.data.url
+          if (Object.keys(bitArrOut).length === donez) { resolve(bitArrOut); }
         } else { 
           throw new Error(result.status_txt)
-          reject(urlArrOut)
+          reject(bitArrOut)
         }
       })
     }
@@ -71,16 +93,16 @@ function getBitly() {
 // Replace old URL's with new Bitly URL's
 function replaceUrls() {
   return new Promise(function(resolve, reject){
-    var outLineText = [],
-        k = 0;
+    var outLineText = [], // Set OUT text, that will be in single LINE format, to array
+        k = 0; // counter
 
-    outLineText[0] = inLineText
+    outLineText[0] = inLineText // We need to Array.replace one URL at a time, so we'll need to use output of the replace as input for next replace
 
     while ( (tempArr2 = regExUrl.exec(inLineText) ) !== null ) {
       var oldUrl = tempArr2[0]
-      var newUrl = urlArrOut[oldUrl]
+      var newUrl = bitArrOut[oldUrl] // Make sure right old URL is being replaced! (order matters)
 
-      outLineText[k+1] = outLineText[k].replace(oldUrl, newUrl)
+      outLineText[k+1] = outLineText[k].replace(oldUrl, newUrl) 
       console.log(oldUrl, newUrl)
       console.log(outLineText[k])
       k++
@@ -111,11 +133,18 @@ $(document).ready(function() {
     console.log("inLineText getting set 222 ");
     donez = inLineText.match(regExUrl).length;
 
-    UrlInToArray().then(
-      function(urlArrIn) { 
-        return getBitly()
+    // Start it up, use promises
+    UrlInToArray()
+    .then(function(urlArrIn) {
+        return finalUrls()
     })
     .then(function(urlArrOut) {
+        return removeUrlRef()
+    })
+    .then(function(urlArrOut) { 
+      return getBitly()
+    })
+    .then(function(bitArrOut) {
       return replaceUrls()
     })
     .then(function(oneLineText){

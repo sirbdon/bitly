@@ -6,7 +6,7 @@
 
 $reUrl = $_POST['reUrl'];
 
-echo get_redirect_final_target($reUrl);
+
 
 function get_redirect_final_target($url)
 {
@@ -19,11 +19,12 @@ function get_redirect_final_target($url)
     curl_close($ch);
 
     if ($target)
-        return $target;
+        return json_encode(array('finalUrl' => $target, 'firstUrl' => $url));
 
     return false;
 }
 
+echo get_redirect_final_target($reUrl);
 
 // function get_final_url($url){
 //     $redirects = get_all_redirects($url);

@@ -1,6 +1,7 @@
 // set global variables
 var 
   urlArrOut = new Object(),
+  bitArrOut = new Object(),
   doneUrlOut = new Array(),
   urlArrIn = new Array(),
   doneUrlIn = new Array(),
@@ -36,10 +37,20 @@ function UrlInToArray() {
 // use $.ajax() ??? here??
 
 function finalUrls() {
+  return new Promise(function(resolve, reject){
+    let a = urlArrIn
 
-  $.post('redirect.php', { reUrl: redirectUrl })
-  .done(function(data) { console.log(data) } )
-  
+    for (i = 0; i < a.length; i++) {
+      $.post('redirect.php', { reUrl: urlArrIn[i] })
+        .done(function(data) {
+          urlArrOut[data.firstUrl] = data.finalUrl
+          if (Object.keys(urlArrOut).length === donez) { resolve(urlArrOut); }
+        })
+        .fail(function(data) {
+          reject(data)
+        })
+    }
+  })
 }
 
 // Take intial URL's from array, get equivalent Bitly URL's and place in object to force
@@ -51,12 +62,12 @@ function getBitly() {
     for (i = 0; i < a.length; i++) {
       $.getJSON(api + encodeURIComponent(a[i]), function(result) {
         if (result.status_code === 200) {
-          urlArrOut[result.data.long_url] = result.data.url
-          if (Object.keys(urlArrOut).length === donez) { resolve(urlArrOut); }
+          bitArrOut[result.data.long_url] = result.data.url
+          if (Object.keys(bitArrOut).length === donez) { resolve(bitArrOut); }
 
         } else { 
           throw new Error(result.status_txt)
-          reject(urlArrOut)
+          reject(bitArrOut)
         }
       })
     }
@@ -106,20 +117,27 @@ $(document).ready(function() {
     console.log("inLineText getting set 222 ");
     donez = inLineText.match(regExUrl).length;
 
-    UrlInToArray().then(
-      function(urlArrIn) { 
-        return getBitly()
+    UrlInToArray()
+    .then(function(urlArrIn) {
+        return finalUrls()
     })
     .then(function(urlArrOut) {
-      return replaceUrls()
-    })
-    .then(function(oneLineText){
-      return formatOutput(oneLineText)
-    })
-    .then(function(outText) {
-      $('#output-text').val(outText)
+      $('#output-text').val(urlArrOut)
       console.log(outText)
     })
+    // .then(function($$$$$$$) { 
+    //   return getBitly()
+    // })
+    // .then(function(urlArrOut) {
+    //   return replaceUrls()
+    // })
+    // .then(function(oneLineText){
+    //   return formatOutput(oneLineText)
+    // })
+    // .then(function(outText) {
+    //   $('#output-text').val(outText)
+    //   console.log(outText)
+    // })
     .catch(function(error) {
       throw new Error('Promise Catch Error: ' + error)
     })
