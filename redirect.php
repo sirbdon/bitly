@@ -6,8 +6,6 @@
 
 $reUrl = $_POST['reUrl'];
 
-
-
 function get_redirect_final_target($url)
 {
     $ch = curl_init($url);
@@ -26,12 +24,4 @@ function get_redirect_final_target($url)
 
 echo get_redirect_final_target($reUrl);
 
-// function get_final_url($url){
-//     $redirects = get_all_redirects($url);
-//     if (count($redirects)>0){
-//         return array_pop($redirects);
-//     } else {
-//         return $url;
-//     }
-// }
 ?>
