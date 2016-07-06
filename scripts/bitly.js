@@ -11,7 +11,7 @@ var
   donez = 0,
   accessToken = 'def06aed7b93c3efe2dce5d57c9d3af833931770',
   api = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=',
-  regExUrl = new RegExp(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/, 'gi'),
+  regExUrl = new RegExp(/(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/, 'gi'),
   regExRef = new RegExp(/(\?ref=[a-z]*)*(\#[a-z\.]*)*/, 'gi');
 
 // Grab all URLs from Input Text and put into Array urlArrIn
