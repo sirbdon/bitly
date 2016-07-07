@@ -1,21 +1,38 @@
 // set global variables
 var 
-  urlArrOut = new Object(),
-  bitArrOut = new Object(),
-  doneUrlOut = new Array(),
-  urlArrIn = new Array(),
-  doneUrlIn = new Array(),
+  urlArrOut   = new Object(),
+  bitArrOut   = new Object(),
+  doneUrlOut  = new Array(),
+  urlArrIn    = new Array(),
+  doneUrlIn   = new Array(),
   outLineText = new Array(),
-  textOut = "",
-  inLineText = "",
-  donez = 0,
+  textOut     = "",
+  inLineText  = "",
+  donez       = 0,
   accessToken = 'def06aed7b93c3efe2dce5d57c9d3af833931770',
-  api = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=',
-  regExUrl = new RegExp(/(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/, 'gi'),
-  regExRef = new RegExp(/(\?ref=[a-z]*)*(\#[a-z\.]*)*/, 'gi');
+  api         = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=',
+  regExUrl    = new RegExp(/(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/, 'gi'),
+  regExRef    = new RegExp(/\?(.*)|\#(.*)/, 'gi'),
+  refReplace  = '?ref=GrowthGenius_io',
+  emailSubj   = 'SUBJECT:\nToday\'s Curated Social Media Content\n\n',
+  emailIntro  = 'Hi [name],\n\nHere are today\'s social media enhancement posts:\n\n',
+  emailOutro  = '\n\nThanks,\nThe GrowthGenius Team';
+
+  // OLD redExpRef... above simply says "all non-newline characters occuring after '?' or '#'"
+  // regExRef = new RegExp(/(\?ref=[a-z]*)*(\#[a-z\.]*)*/, 'gi');
+  // regExRef = new RegExp(/(\??\&?ref=[a-z]*)*|(\??\&?utm_[a-z=&_.]*)|(\#[a-z&._]*)*/, 'gi'),
+
+// Appends status updates into "Result" textbox
+function statusUpdate(appendText) {
+  let oldStatus = $('#output-text').val();
+
+  $('#output-text').val(oldStatus.concat('\n' + appendText + '\n...'))
+}
 
 // Grab all URLs from Input Text and put into Array urlArrIn
 function UrlInToArray() {
+  statusUpdate('Moving URLs into array')
+
   return new Promise(function(resolve, reject){
     var tempArr;
 
@@ -38,6 +55,8 @@ function UrlInToArray() {
 // use $.ajax() ??? here??
 
 function finalUrls() {
+  statusUpdate('Getting URL endpoints')
+
   return new Promise(function(resolve, reject){
     let a = urlArrIn
 
@@ -55,13 +74,15 @@ function finalUrls() {
 }
 
 function removeUrlRef() {
+  statusUpdate('Replacing URL ?ref with GrowthGenius_io')
+
   return new Promise(function(resolve, reject){
     let obj = urlArrOut
     let inc = 0;
 
     for (let val in obj) {
       if ( obj.hasOwnProperty(val) ) {
-        let newVal = obj[val].replace(regExRef, '')
+        let newVal = obj[val].replace(regExRef, refReplace)
         urlArrOut[val] = newVal
         inc++
       }
@@ -73,6 +94,8 @@ function removeUrlRef() {
 // Take intial URL's from array, get equivalent Bitly URL's and place in object to force
 // proper order (key / value)
 function getBitly() {
+  statusUpdate('Getting bitly URLs')
+
   return new Promise(function(resolve, reject){
     let obj = urlArrOut
 
@@ -92,6 +115,8 @@ function getBitly() {
 
 // Replace old URL's with new Bitly URL's
 function replaceUrls() {
+  statusUpdate('Replacig URLs in text with bitly URLs')
+
   return new Promise(function(resolve, reject){
     var outLineText = [], // Set OUT text, that will be in single LINE format, to array
         k = 0; // counter
@@ -115,10 +140,13 @@ function replaceUrls() {
 
 // Convert text back into line-break format
 function formatOutput(oneLineText) {
-  return new Promise(function(resolve, reject){
-    var formatted = oneLineText.replace(/\s!###!\s\s!###!\s/g, '\r\n');
+  statusUpdate('Formatting output')
 
-    resolve(formatted)
+  return new Promise(function(resolve, reject){
+    let formatted = oneLineText.replace(/\s!###!\s\s!###!\s/g, '\r\n');
+    let complete  = emailSubj.concat(emailIntro,formatted,emailOutro);
+
+    resolve(complete)
   })
 }
 
