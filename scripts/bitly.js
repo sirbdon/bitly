@@ -24,9 +24,9 @@ var
 
 // Appends status updates into "Result" textbox
 function statusUpdate(appendText) {
-  let oldStatus = $('#output-text').val();
+  let oldStatus = $('#outputText').val();
 
-  $('#output-text').val(oldStatus.concat('\n' + appendText + '\n...'))
+  $('#outputText').val(oldStatus.concat('\n' + appendText + '\n...'))
 }
 
 // Grab all URLs from Input Text and put into Array urlArrIn
@@ -179,7 +179,7 @@ $(document).ready(function() {
       return formatOutput(oneLineText)
     })
     .then(function(outText) {
-      $('#output-text').val(outText)
+      $('#outputText').val(outText)
       console.log(outText)
     })
     .catch(function(error) {
